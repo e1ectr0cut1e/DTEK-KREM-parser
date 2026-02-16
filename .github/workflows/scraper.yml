@@ -2,7 +2,8 @@ name: DTEK Scraper
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Run every hour
+    - cron: "15 * * * *" # at 45 minutes past the hour, every 3 hours, between 05:00 and 23:59
+    - cron: "45 5-23/3 * * *" # at 45 minutes past the hour, every 3 hours, between 05:00 and 23:59
   workflow_dispatch:  # Allow manual trigger
 
 permissions:
@@ -10,49 +11,50 @@ permissions:
 
 jobs:
   scrape:
-    runs-on: ubuntu-latest
-    
+    runs-on: ubuntu-slim
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: data  # Checkout data branch
           fetch-depth: 0
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
-      
+          python-version: "3.14"
+
       - name: Install dependencies
         run: |
-          pip install playwright==1.56 requests
+          pip install playwright==1.58.2 requests
           playwright install chromium --with-deps
-      
+
       - name: Run scraper
         env:
           BROWSERLESS_TOKEN: ${{ secrets.BROWSERLESS_TOKEN }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
         run: python scraper_github_actions.py
-      
+
       - name: Commit and push to data branch
         run: |
-          git config --global user.name 'GitHub Action'
-          git config --global user.email 'action@github.com'
-          
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+
           # Force add the file
           git add dtek_data.json
-          
+
           # Debug: show what's staged
           echo "Staged changes:"
           git diff --staged --stat
-          
+
           # Commit if there are changes
           if git diff --staged --quiet; then
             echo "No changes detected"
           else
             TODAY=$(date -u +"%Y-%m-%d")
             LAST_COMMIT_MSG=$(git log -1 --pretty=%B 2>/dev/null || echo "")
-            
+
             if echo "$LAST_COMMIT_MSG" | grep -q "$TODAY"; then
               git commit --amend --no-edit -m "⚡ DTEK data - $TODAY"
               git push --force origin data
@@ -61,5 +63,9 @@ jobs:
               git commit -m "⚡ DTEK data - $TODAY"
               git push origin data
               echo "✓ Created new commit for $TODAY"
+            fi
+
+            if [ -n "$WEBKOOK_URL" ]; then
+              curl -s -F "file=@dtek_data.json" "$WEBKOOK_URL"
             fi
           fi
