@@ -66,6 +66,6 @@ jobs:
             fi
 
             if [ -n "$WEBKOOK_URL" ]; then
-              curl -s -F "file=@dtek_data.json" "$WEBKOOK_URL"
+              curl -s -d @dtek_data.json --header "Content-Type: application/json" "$WEBKOOK_URL"
             fi
           fi
