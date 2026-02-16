@@ -1,4 +1,4 @@
-name: ${{ vars.NAME }}
+name: dtek
 
 on:
   workflow_call:
