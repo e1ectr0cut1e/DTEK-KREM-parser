@@ -4,7 +4,7 @@ import re
 import os
 from datetime import datetime
 
-url = "https://www.dtek-dnem.com.ua/ua/shutdowns"
+url = "https://www.dtek-krem.com.ua/ua/shutdowns"
 BROWSERLESS_TOKEN = os.getenv("BROWSERLESS_TOKEN", "")
 
 def scrape_dtek():
