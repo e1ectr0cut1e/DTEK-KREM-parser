@@ -28,11 +28,11 @@ jobs:
           ref: data
           path: data
 
-      - name: Set up Python ${{ PYTHON_VERSION }}
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v6
         with:
-          python-version: ${{ PYTHON_VERSION }}
-          pip-install: playwright==${{ PLAYWRIGHT_VERSION }} requests
+          python-version: ${{ env.PYTHON_VERSION }}
+          pip-install: playwright==${{ env.PLAYWRIGHT_VERSION }} requests
 
       - name: Install playwright chromium
         run: playwright install chromium --with-deps
@@ -41,13 +41,13 @@ jobs:
         env:
           SHUTDOWNS_URL: ${{ vars.SHUTDOWNS_URL }}
           BROWSERLESS_TOKEN: ${{ secrets.BROWSERLESS_TOKEN }}
-        run: python scrape.py > ${{ GITHUB_WORKSPACE }}/data/${{ OUTPUT_FILE }}
+        run: python scrape.py > ${{ GITHUB_WORKSPACE }}/data/${{ env.OUTPUT_FILE }}
 
       - name: Detect changes
         id: changes
         run: |
           cd ${{ GITHUB_WORKSPACE }}/data
-          git add ${{ OUTPUT_FILE }}
+          git add ${{ env.OUTPUT_FILE }}
           if git diff --staged --exit-code; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else
@@ -57,11 +57,11 @@ jobs:
         if:
           steps.changes.outputs.changed == 'true' && secrets.WEBHOOK_URL != ''
         run: |
-          curl -s -d @${{ GITHUB_WORKSPACE }}/data/${{ OUTPUT_FILE }} --header "Content-Type: application/json" ${{ secrets.WEBHOOK_URL }}
+          curl -s -d @${{ GITHUB_WORKSPACE }}/data/${{ env.OUTPUT_FILE }} --header "Content-Type: application/json" ${{ secrets.WEBHOOK_URL }}
 
-      - name: Push the new ${{ OUTPUT_FILE }} to the data branch
+      - name: Push the new ${{ env.OUTPUT_FILE }} to the data branch
         if: steps.changes.outputs.changed == 'true'
         run: |
           cd ${{ GITHUB_WORKSPACE }}/data
-          git commit -m "${{ OUTPUT_FILE }}-$(date +%s)"
+          git commit -m "${{ env.OUTPUT_FILE }}-$(date +%s)"
           git push origin HEAD:data
