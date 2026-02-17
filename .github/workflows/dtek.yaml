@@ -2,7 +2,7 @@ name: dtek
 
 on:
   schedule:
-    - cron: "15 * * * *" # at 45 minutes past the hour, every 3 hours, between 05:00 and 23:59
+    - cron: "15 * * * *" # at 15 minutes past the hour
     - cron: "45 5-23/3 * * *" # at 45 minutes past the hour, every 3 hours, between 05:00 and 23:59
   workflow_dispatch:
 
