@@ -1,5 +1,7 @@
 # 🗓️ DTEK Schedule Scraper
 
+⚠️ **Deprecation notice:** Browserless API usage is not required anymore, since local [curl-cffi](https://curl-cffi.readthedocs.io/) approach works perfectly.
+
 This repository contains a GitHub Actions workflow that scrapes the latest DTEK schedule data.
 
 > **Note:** The scraper relies on the [**Browserless API**](https://www.browserless.io/). You’ll need a valid Browserless API key and must add it as a secret named `BROWSERLESS_TOKEN` in your repository settings.  
