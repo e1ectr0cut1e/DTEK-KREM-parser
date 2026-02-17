@@ -1,4 +1,4 @@
-# DTEK Schedule Scraper
+# 🗓️ DTEK Schedule Scraper
 
 This repository contains a GitHub Actions workflow that scrapes the latest DTEK schedule data.
 
